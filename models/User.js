@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
@@ -54,6 +55,30 @@ const userSchema = new mongoose.Schema(
 
 userSchema.virtual('fullname').get(function () {
   return `${this.firstName} ${this.lastName}`;
+});
+
+userSchema.pre('save', async function (next) {
+  const hashedPassword = await bcrypt.hash(this.password, 11);
+
+  console.log('hashedPassword', hashedPassword);
+
+  this.password = hashedPassword;
+  this.passwordConfirm = undefined;
+
+  next();
+});
+
+userSchema.pre('findOneAndUpdate', async function (next) {
+  if (!this._update.password) return next();
+
+  const hashedPassword = await bcrypt.hash(this._update.password, 11);
+
+  console.log('hashedPassword', hashedPassword);
+
+  this._update.password = hashedPassword;
+  this._update.passwordConfirm = undefined;
+
+  next();
 });
 
 const userModel = mongoose.model('User', userSchema);
