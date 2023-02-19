@@ -5,12 +5,14 @@ exports.getUsers = async (req, res) => {
   //   email : "admin@gmail.com"
   // })
 
+  console.log('req.user', req.user);
   const users = await User.find();
 
   res.status(200).json({
     status: 'success',
     results: users.length,
     users,
+    loggedUser: req.user,
   });
 };
 
