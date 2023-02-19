@@ -1,36 +1,111 @@
-exports.getUsers = (req, res) => {
-  d;
-  res.send(users);
+const User = require('../models/User');
+
+exports.getUsers = async (req, res) => {
+  // const users = await User.find({
+  //   email : "admin@gmail.com"
+  // })
+
+  const users = await User.find();
+
+  res.status(200).json({
+    status: 'success',
+    results: users.length,
+    users,
+  });
 };
 
-exports.updatedUser = (req, res) => {
-  const id = parseInt(req.params.id);
-  const user = users.find((u) => u.id === id);
+exports.updatedUser = async (req, res) => {
+  const { id } = req.params;
 
-  if (user) {
-    res.send(user);
-  } else {
-    res.status(404).send('User not found');
+  const user = await User.findByIdAndUpdate(id, req.body, {
+    new: true,
+    // runValidators : true
+  });
+
+  if (!user) {
+    // TODO - Error
+    return res.status(404).json({
+      status: 'error',
+      message: `No User found with id ${id}`,
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    user,
+  });
+};
+
+exports.createUser = async (req, res) => {
+  try {
+    const user = await User.create(req.body);
+    // const user = await User.create({...req.body})
+    // const user = await User.create({
+    //   firstName : req.body.firstName,
+    //   firstName : req.body.firstName,
+    // })
+
+    console.log('user.id', user.id);
+    console.log('user._id', user._id);
+
+    res.status(201).json({
+      status: 'success',
+      user,
+    });
+  } catch (error) {
+    console.log('error', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message,
+      stack: error.stack,
+    });
   }
 };
 
-exports.createUser = (req, res) => {
-  const user = req.body;
-  user.id = users.length + 1;
-  users.push(user);
-  res.send(user);
+exports.getUser = async (req, res) => {
+  const { id } = req.params;
+
+  const user = await User.findById(id);
+  // const user = await User.findOne({
+  //   _id : id,
+  //   email : 'example@gmail.com'
+  // });
+
+  if (!user) {
+    // TODO - Error
+    return res.status(404).json({
+      status: 'error',
+      message: `No User found with id ${id}`,
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    user,
+  });
 };
 
-exports.deleteUser = (req, res) => {
-  const id = parseInt(req.params.id);
-  const user = users.find((u) => u.id === id);
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
 
-  if (user) {
-    users = users.filter((u) => u.id !== id);
-    res.send(`User with id ${id} deleted`);
-  } else {
-    res.status(404).send('User not found');
+  const user = await User.findByIdAndDelete(id);
+  // const user = await User.findOneAndDelete({
+  //   _id : id,
+  //   email : 'example@gmail.com'
+  // });
+
+  if (!user) {
+    // TODO - Error
+    return res.status(404).json({
+      status: 'error',
+      message: `No User found with id ${id}`,
+    });
   }
+
+  res.status(204).json({
+    status: 'success',
+    user: null,
+  });
 };
 
 // module.exports ={
