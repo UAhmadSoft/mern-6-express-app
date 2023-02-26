@@ -9,6 +9,7 @@ const dbConnect = require('./utils/DBConnect');
 
 const userRouter = require('./routers/userRouter');
 const authRouter = require('./routers/authRouter');
+const productRouter = require('./routers/ProuctRouter');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -18,6 +19,7 @@ console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/products', productRouter);
 
 dbConnect();
 

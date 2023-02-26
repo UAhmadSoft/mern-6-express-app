@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema(
         message: 'Passwords are not the same!',
       },
     },
+    products: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Product',
+      },
+    ],
     // createdAt : {
     //   type : Date,
     //   default  : Date.now()
@@ -58,6 +64,8 @@ userSchema.virtual('fullname').get(function () {
 });
 
 userSchema.pre('save', async function (next) {
+  if (!this.password) return;
+
   const hashedPassword = await bcrypt.hash(this.password, 11);
 
   console.log('hashedPassword', hashedPassword);
