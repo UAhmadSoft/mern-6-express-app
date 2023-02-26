@@ -5,8 +5,31 @@ exports.getUsers = async (req, res) => {
   //   email : "admin@gmail.com"
   // })
 
+  console.log('req.query', req.query);
   console.log('req.user', req.user);
-  const users = await User.find();
+  let query = User.find();
+
+  if (req.query.sort) {
+    query.sort(req.query.sort);
+    //! descending query.sort('-firstName');
+    // query.sort('age firstName');
+  }
+
+  if (req.query.fields) {
+    let fields = req.query.fields.replace(',', ' ');
+    console.log('fields', fields);
+    query.select(fields);
+    //! descending query.sort('-firstName');
+    // query.sort('age firstName');
+  }
+
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 100;
+
+  query.skip(limit * (page - 1)).limit(limit);
+  // query.skip(0).limit(2);
+
+  const users = await query;
 
   res.status(200).json({
     status: 'success',

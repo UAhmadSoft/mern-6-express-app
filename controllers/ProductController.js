@@ -2,9 +2,6 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 
 exports.getAllProducts = async (req, res, next) => {
-  // const products = await Product.find().populate('user', 'firstName email');
-  // const products = await Product.find().populate('user', '-email +password');
-  // const products = await Product.find().populate('user');
   const products = await Product.find();
 
   res.status(200).json({
